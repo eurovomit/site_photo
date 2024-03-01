@@ -3,6 +3,6 @@ from fastapi import FastAPI
 app = FastAPI()
 
 
-@app.get("/bookings")
-async def get_bookings():
-    return {"booking": "заезд на неделю"}
+@app.get("/")
+async def get_news():
+    return {"new": "съемка в ДС"}
