@@ -12,6 +12,13 @@ sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
 from app.database import Base, DATABASE_URL
 from app.kindergarten.model import Kindergarten
 from app.group.model import Group
+from app.theme.model import Theme
+from app.shooting.model import Shooting
+from app.user.model import User
+from app.photo.model import Photo
+from app.type.model import Type
+from app.basket.model import Basket
+from app.order.model import Order
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
