@@ -3,7 +3,7 @@ import datetime
 import enum
 from typing import Annotated
 
-from sqlalchemy import Table, Column, Integer, String, MetaData, create_engine, text, insert, ForeignKey
+from sqlalchemy import Table, Column, Integer, String, MetaData, create_engine, text, insert, ForeignKey, select
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 from sqlalchemy.orm import sessionmaker, DeclarativeBase, Mapped, mapped_column
 
@@ -89,3 +89,22 @@ async def async_insert_data():
 
 sync_insert_data()
 asyncio.run(async_insert_data())
+
+# ------------- выборка -----------------
+def select_workers():
+    with sync_session_factory() as session:
+        query = select(WorkersORM)
+        res = session.execute(query)
+        workers = res.all()  # вернуть все строки
+        print(f'{workers=}')
+
+select_workers()
+
+# ------------- обновление -----------------
+def update_workers(worker_id=2, new_username='Banny'):
+    with sync_session_factory() as session:
+        worker = session.get(WorkersORM, worker_id)
+        worker.username = new_username
+        session.commit()
+
+update_workers()
