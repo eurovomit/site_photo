@@ -10,11 +10,16 @@ from alembic import context
 sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
 
 from app.database import Base, DATABASE_URL
+from app.town.model import Town
+from app.news.model import News
+from app.payment.model import Payment
 from app.kindergarten.model import Kindergarten
 from app.group.model import Group
 from app.theme.model import Theme
 from app.shooting.model import Shooting
+from app.group.model import GroupShooting
 from app.user.model import User
+from app.group.model import GroupUser
 from app.photo.model import Photo
 from app.type.model import Type
 from app.basket.model import Basket

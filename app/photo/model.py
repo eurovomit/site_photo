@@ -1,11 +1,15 @@
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+
 from app.database import Base
-from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy import ForeignKey
 
 
 class Photo(Base):
     __tablename__ = "photo"
 
-    id = Column(Integer, primary_key=True)
-    name = Column(String, nullable=False)
-    path = Column(String, nullable=False)
-    shooting_id = Column(ForeignKey("shooting.id"))
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str] = mapped_column(nullable=False)
+    path: Mapped[str] = mapped_column(nullable=False)
+    shooting_id: Mapped[int] = mapped_column(ForeignKey("shooting.id", ondelete="CASCADE"))
+
+    shooting: Mapped["Shooting"] = relationship(back_populates="photos")
