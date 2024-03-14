@@ -38,7 +38,17 @@ async_session_factory = async_sessionmaker(async_engine)
 
 # ------------- создаем базовый класс для создания моделей -----------------
 class Base(DeclarativeBase):
-    pass
+    repr_cols_num = 3
+    repr_cols = tuple()
+# для вывода на печать класса в читаемом виде
+    def __repr__(self):
+        """Relationships не используются в repr(), т.к. могут вести к неожиданным подгрузкам"""
+        cols = []
+        for idx, col in enumerate(self.__table__.columns.keys()):
+            if col in self.repr_cols or idx < self.repr_cols_num:
+                cols.append(f"{col}={getattr(self, col)}")
+
+        return f"<{self.__class__.__name__} {', '.join(cols)}>"
 
 # ------------- создаем переменные для вставки, которые часто используются -----------------
 intpk = Annotated[int, mapped_column(primary_key=True)]
@@ -51,7 +61,7 @@ class WorkersORM(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     username: Mapped[str] = mapped_column()
 
-    resumes: Mapped[list['ResumesORM']] = relationship()
+    resumes: Mapped[list['ResumesORM']] = relationship(back_populates="worker")
 
 class Workload(enum.Enum):
     parttime = "parttime"
@@ -67,7 +77,7 @@ class ResumesORM(Base):
     created_at: Mapped[created_at] # вставка переменной, которая часто используется
     updated_at: Mapped[update_at] # вставка переменной, которая часто используется
 
-    worker: Mapped["WorkersORM"] = relationship()
+    worker: Mapped["WorkersORM"] = relationship(back_populates="resumes")
 
 # ------------- создаем таблицу -----------------
 def create_tables():
