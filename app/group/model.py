@@ -3,6 +3,9 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.database import Base
 from sqlalchemy import ForeignKey
 
+from app.shooting.model import Shooting
+from app.user.model import User
+
 
 class Group(Base):
     __tablename__ = "group"
@@ -12,8 +15,8 @@ class Group(Base):
     kindergarten_id: Mapped[int] = mapped_column(ForeignKey("kindergarten.id", ondelete="CASCADE"))
 
     kindergarten: Mapped["Kindergarten"] = relationship(back_populates="groups")
-    shootings: Mapped[list['Shooting']] = relationship(back_populates="groups", secondary="groupshooting")
-    users: Mapped[list['User']] = relationship(back_populates="groups", secondary="groupuser")
+    shootings: Mapped[list[Shooting]] = relationship(back_populates="groups", secondary="groupshooting")
+    users: Mapped[list[User]] = relationship(back_populates="groups", secondary="groupuser")
 
 
 class GroupShooting(Base):

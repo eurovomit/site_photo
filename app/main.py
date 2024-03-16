@@ -5,10 +5,12 @@ from typing import Optional, Annotated
 from pydantic import BaseModel
 from app.kindergarten.router import router as router_kg
 from app.order.router import router as router_order
+from app.town.router import router as router_town
 
 app = FastAPI()
 app.include_router(router_kg)
 app.include_router(router_order)
+app.include_router(router_town)
 
 @app.get("/")
 async def get_news():

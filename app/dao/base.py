@@ -25,3 +25,10 @@ class BaseDAO:
             query = select(cls.model).filter_by(**filter_by)
             result = await session.execute(query)
             return result.scalars().all()
+
+    @classmethod
+    async def insert_data(cls, **data):
+        async with async_session_maker() as session:
+            towns = cls.model(**data)
+            session.add_all([towns])
+            await session.commit()

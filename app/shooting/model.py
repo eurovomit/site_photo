@@ -5,6 +5,9 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.database import Base
 from sqlalchemy import ForeignKey
 
+from app.photo.model import Photo
+from app.theme.model import Theme
+
 
 class Shooting(Base):
     __tablename__ = "shooting"
@@ -14,6 +17,6 @@ class Shooting(Base):
     group_id: Mapped[int] = mapped_column(ForeignKey("group.id", ondelete="CASCADE"))
     date: Mapped[datetime.date] = mapped_column(nullable=False)
 
-    theme: Mapped["Theme"] = relationship(back_populates="shootings")
+    theme: Mapped[Theme] = relationship(back_populates="shootings")
     groups: Mapped[list['Group']] = relationship(back_populates="shootings", secondary="groupshooting")
-    photos: Mapped[list["Photo"]] = relationship(back_populates="shooting")
+    photos: Mapped[list[Photo]] = relationship(back_populates="shooting")
