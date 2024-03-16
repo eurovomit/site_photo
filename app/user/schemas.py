@@ -1,10 +1,13 @@
 from pydantic import BaseModel
 
 
-class SKindergarten(BaseModel):
+class SUser(BaseModel):
     id: int
     name: str
-    town_id: int
+    email: str
+    password: str
+    phone: str
+    group_id: int
 
     class Config:
         orm_mode = True

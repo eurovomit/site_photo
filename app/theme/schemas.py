@@ -1,10 +1,9 @@
 from pydantic import BaseModel
 
 
-class SKindergarten(BaseModel):
+class STheme(BaseModel):
     id: int
     name: str
-    town_id: int
 
     class Config:
         orm_mode = True

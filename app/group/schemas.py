@@ -1,10 +1,10 @@
 from pydantic import BaseModel
 
 
-class SKindergarten(BaseModel):
+class SGroup(BaseModel):
     id: int
     name: str
-    town_id: int
+    kindergarten_id: int
 
     class Config:
         orm_mode = True

@@ -1,10 +1,11 @@
 from pydantic import BaseModel
 
 
-class SKindergarten(BaseModel):
+class SPhoto(BaseModel):
     id: int
     name: str
-    town_id: int
+    path: str
+    shooting_id: int
 
     class Config:
         orm_mode = True

@@ -1,20 +1,13 @@
 from fastapi import APIRouter
-from app.database import async_session_maker
-from sqlalchemy import select
-from app.order.model import Order
+from app.order.dao import OrderDAO
+from app.order.schemas import SOrder
 
 
 router = APIRouter(prefix='/orders', tags=['заказы'])
 
-@router.get('')
-async def get_orders_all():
-    async with async_session_maker() as session:
-        query = select(Order)
-        result = await session.execute(query)
-        # return result.scalars().all()
-        return result.mappings().all()
 
+@router.get('/ins')
+async def ins_basket():
+    await OrderDAO.insert_data(content='[{"24": [{"15x22": 2}, {"20x30": 1}]}, {"27": [{"10x15": 4}, {"calendar": 1}, {"magnet": 2}]}]', user_id=13)
+    await OrderDAO.insert_data(content='[{"25": [{"15x22": 2}, {"20x30": 1}]}, {"28": [{"10x15": 4}, {"calendar": 1}, {"magnet": 2}]}]', user_id=14)
 
-@router.get('/{user_id}')
-def get_order_for_user(user_id):
-    pass

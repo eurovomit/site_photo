@@ -1,10 +1,13 @@
+import datetime
+
 from pydantic import BaseModel
 
 
-class SKindergarten(BaseModel):
+class SNews(BaseModel):
     id: int
     name: str
-    town_id: int
+    description: str
+    created_at: datetime.datetime
 
     class Config:
         orm_mode = True
