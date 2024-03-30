@@ -6,6 +6,11 @@ from app.group.schemas import SGroup
 router = APIRouter(prefix='/groups', tags=['группы детских садов'])
 
 
+@router.get('/users')
+async def select_users_in_group(group_id):
+    return await GroupDAO.find_users_in_group(id=int(group_id))
+
+
 @router.get('/ins')
 async def ins_group():
     await GroupDAO.insert_data(name='старшая', kindergarten_id=18)
