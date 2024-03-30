@@ -1,8 +1,9 @@
 from pydantic import BaseModel
 
+from app.kindergarten.model import Kindergarten
 
-class STown(BaseModel):
-    id: int
+
+class STownPost(BaseModel):
     name: str
 
     class Config:
