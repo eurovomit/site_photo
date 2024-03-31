@@ -1,5 +1,5 @@
 from sqlalchemy import MetaData, Table, Column, Integer, String, ForeignKey, create_engine, insert, select, and_, or_, \
-    func
+    func, union_all, update, bindparam, delete
 
 # =========== создать движок ==============
 # echo=True       полное логтрование в консоли
@@ -201,3 +201,74 @@ stmt = select(user_alias_1.c.name, user_alias_2.c.name).join_from(
 )
 with engine.connect() as conn:
     print(conn.execute(stmt).all())
+
+# субзапросы
+subq = (
+    select(func.count(address_table.c.id).label("count"), address_table.c.user_id)
+        .group_by(address_table.c.user_id)
+        .subquery()
+) # это и есть субзапрос, к нему можно обращаться как к таблице, показано далее
+print(subq) # SELECT count(address.id) AS count, address.user_id FROM address GROUP BY address.user_id
+with engine.connect() as conn:
+    print(conn.execute(select(subq)).all()) # [(2, 1), (1, 2), (1, 3)] - число почт у юзера и id юзера
+with engine.connect() as conn:
+    print(conn.execute(select(subq.c.user_id, subq.c.count)).all()) # [(1, 2), (2, 1), (3, 1)] - наоборот
+# их можно джойнить, субзапросы запоминают ключи из своих запросов
+stmt = select(user_table.c.name, user_table.c.fullname, subq.c.count).join_from(user_table, subq)
+with engine.connect() as conn:
+    print(conn.execute(stmt).all()) # [('Victoria', 'Alexeeva', 2), ('Maria', 'Alexeeva', 1), ('Evgenia', 'Alexeeva', 1)]
+
+# union
+stmt1 = select(user_table).where(user_table.c.fullname == "Uvarova")
+stmt2 = select(user_table).where(user_table.c.name == "Maria")
+u = union_all(stmt1, stmt2)
+with engine.connect() as conn:
+    print(conn.execute(u).all())
+
+# EXISTS
+subq = (select(func.count(address_table.c.id))
+        .where(user_table.c.id == address_table.c.user_id)
+        .group_by(address_table.c.user_id)
+        .having(func.count(address_table.c.id) > 1)
+        ).exists()
+with engine.connect() as conn:
+    result = conn.execute(select(user_table.c.name).where(subq))
+    print(result.all()) # [('Victoria',)]
+
+# проверить тип данных
+print(func.now().type) # DATETIME
+
+# UPDATE
+stmt = (update(user_table).where(user_table.c.name == "Rita").values(fullname="Andropova"))
+with engine.connect() as conn:
+    conn.execute(stmt)
+    conn.commit()
+with engine.connect() as conn:
+    result = conn.execute(select(user_table).where(user_table.c.name == "Rita"))
+    print(result.all())
+
+# UPDATE множественное обновление данных
+stmt = (update(user_table).where(user_table.c.name == bindparam("oldname")).values(name=bindparam("newname")))
+with engine.begin() as conn:
+    res = conn.execute(stmt,
+                 [
+                     {"oldname": "Victoria", "newname": "Vika"},
+                     {"oldname": "Maria", "newname": "Masha"},
+                     {"oldname": "Evgenia", "newname": "Genya"},
+                 ],
+                 )
+    print(res.rowcount) # сколько строк изменено
+    conn.commit()
+with engine.connect() as conn:
+    result = conn.execute(select(user_table))
+    print(result.all())
+
+# DELETE
+stmt = delete(user_table).where(user_table.c.name == "Rita")
+with engine.connect() as conn:
+    res = conn.execute(stmt)
+    print(res.rowcount) # сколько строк удалено
+    conn.commit()
+with engine.connect() as conn:
+    result = conn.execute(select(user_table))
+    print(result.all())
